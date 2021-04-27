@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React, { lazy, Suspense, useState } from 'react'
 import { fetchWeather } from './fetchWeather'
 import './App.css'
+
+const WeatherCardComponent = lazy(() => import('./weatherCardComponent'));
+
+const renderLoader = () => <p>Loading</p>;
 
 const App = () => {
     const [query, setQuery] = useState('')
@@ -27,30 +31,9 @@ const App = () => {
                 onKeyPress={search}
             />
             {weather.main && (
-                <div className="city">
-                    <h2 className="city-name">
-                        <span>
-                            {weather.name}
-                        </span>
-                        <sup>
-                            {weather.sys.country}
-                        </sup>
-                    </h2>
-                    <div className="city-temp">
-                        {Math.round(weather.main.temp)}
-                        <sup>
-                            &deg;C
-                        </sup>
-                    </div>
-                    <div className="info">
-                        <img
-                            className="city-icon"
-                            src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} 
-                            alt={weather.weather[0].description}
-                        />
-                        <span className="city-temp-description">{weather.weather[0].description}</span>
-                    </div>
-                </div>
+                <Suspense fallback={renderLoader()}>
+                    <WeatherCardComponent weather={weather} />
+                </Suspense>
             )}
         </div>
     )
